@@ -6,6 +6,7 @@ $:.unshift(LIBRARY_PATH)
 
 require 'dnaio'
 require 'searcher'
+require 'parallel'
 
 fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length == 2
 database, query = ARGV
@@ -21,8 +22,9 @@ end
 
 File.open(query) do |handle|
   qs = DnaIO.new handle
-  qs.each do |record|
-    hit = searcher.find record.sequence
-    puts "#{record.name} -> #{hit}"
+
+  Parallel.map(qs, :in_processes=>2) do |chunk|
+    hit = searcher.find chunk.sequence
+    puts "#{chunk.name} -> #{hit}"
   end
 end

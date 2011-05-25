@@ -1,4 +1,6 @@
 class DnaIO # iterator
+  include Enumerable
+  
   def initialize(handle, args={})
     @handle = handle
   end
