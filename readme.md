@@ -6,11 +6,11 @@ The usual seed and extend search algorithm implemented in Ruby.
 
 ## What it do?
 
-  - Finds you a string that has the closest matching substring to your query string.
-	- Uses all your cores
-	- Is fast
+- Finds you a string that has the closest matching substring to your query string.
+- Uses all your cores
+- Is fast
 	
 ## What it don't?
 
-  - Compute alignments
-	- Do any fancy heuristics to ensure biologically relevant results
+- Compute alignments
+- Do any fancy heuristics to ensure biologically relevant results
