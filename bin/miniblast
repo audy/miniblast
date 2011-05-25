@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+require './blastlib.rb'
+
+# search for exact substrings in a large set of strings
+database = ARGV[0]
+query = ARGV[1]
+K = 35
+
+# make kmer hashes of database
+hash_table = Hash.new { |h, k| h[k] = Array.new }
+names = Hash.new
+
+File.open(database) do |handle|
+  db = DnaIO.new handle
+  i = 0
+  db.each do |record|
+    names[i] = record.name
+    # generate kmers, add to hash table
+    steps = record.length - K + 1
+    steps.times do |n|
+      kmer = record.sequence[n..n+K]
+      hash_table[kmer] << i
+    end
+    i += 1
+  end
+end
+
+File.open(query) do |handle|
+  qs = DnaIO.new handle
+  qs.each do |record|
+    # build kmers
+    steps = record.length - K + 1
+    kmers = Array.new
+    steps.times do |n|
+      kmer = record.sequence[n..n+K]
+      kmers << kmer
+    end
+    
+    # search database
+    ids = Array.new
+    kmers.each do |kmer|
+      ids << hash_table[kmer] if hash_table.has_key? kmer
+    end
+    ids.flatten!
+    best = ids.group_by { |e| e }.values.max_by(&:size).first
+    puts names[best]
+  end
+end
