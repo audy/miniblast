@@ -13,11 +13,9 @@ class DnaIO # iterator
       else
         sequence << line.strip.tr(' ','')
       end
-      yield Dna.new(:name => header, :sequence => sequence)
     end
-    
+    yield Dna.new(:name => header, :sequence => sequence) 
   end
-
 end
 
 class Dna # nucleotide record
