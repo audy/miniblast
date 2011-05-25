@@ -15,7 +15,7 @@ searcher = Searcher.new K
 
 File.open(database) do |handle|
   db = DnaIO.new handle
-  db.each do |record|
+  Parallel.map(db, :in_processes => 16) do |record|
     searcher.add record.sequence, record.name, 
   end
 end
@@ -23,7 +23,7 @@ end
 File.open(query) do |handle|
   qs = DnaIO.new handle
 
-  Parallel.map(qs, :in_processes=>2) do |chunk|
+  Parallel.map(qs, :in_processes => 16) do |chunk|
     hit = searcher.find chunk.sequence
     puts "#{chunk.name} -> #{hit}"
   end
