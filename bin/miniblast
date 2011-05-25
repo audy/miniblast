@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require '../lib/blastlib.rb'
+require './dnaio.rb'
 
 # search for exact substrings in a large set of strings
 database = ARGV[0]
