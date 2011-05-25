@@ -6,19 +6,12 @@ $:.unshift(LIBRARY_PATH)
 
 require 'dnaio'
 
-# search for exact substrings in a large set of strings
-if ARGV.length != 2
-  fail "usage: #{__FILE__} database.fasta query.fasta"
-end
-
-database = ARGV[0]
-query = ARGV[1]
+fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length == 2
+database, query = ARGV
 K = 35
 
-# make kmer hashes of database
 hash_table = Hash.new { |h, k| h[k] = Array.new }
 names = Hash.new
-
 File.open(database) do |handle|
   db = DnaIO.new handle
   i = 0
