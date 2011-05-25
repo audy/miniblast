@@ -11,11 +11,12 @@ require 'parallel'
 fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length == 2
 database, query = ARGV
 K = 35
+CPUS = Parallel.processor_count
 searcher = Searcher.new K
 
 File.open(database) do |handle|
   db = DnaIO.new handle
-  Parallel.map(db, :in_processes => 16) do |record|
+  db.each do |record|
     searcher.add record.sequence, record.name, 
   end
 end
@@ -23,7 +24,7 @@ end
 File.open(query) do |handle|
   qs = DnaIO.new handle
 
-  Parallel.map(qs, :in_processes => 16) do |chunk|
+  Parallel.map(qs, :in_processes => CPUS) do |chunk|
     hit = searcher.find chunk.sequence
     puts "#{chunk.name} -> #{hit}"
   end
