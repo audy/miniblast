@@ -1,8 +1,10 @@
-class Searcher
+require 'dnaio'
+
+class Miniblast
   attr_accessor :names, :k, :hash_table
   
-  def initialize(k)
-    @k = k
+  def initialize(args={})
+    @k = args[:k]
     @names = Hash.new
     @hash_table = Hash.new { |h, k| h[k] = Array.new }  
   end
@@ -15,7 +17,16 @@ class Searcher
     end
   end
   
-  def find(s)
+  def load(handle, args={}) # load an entire database
+    File.open(handle) do |handle|
+      db = DnaIO.new handle
+      db.each do |record|
+        self.add record.sequence, record.name, 
+      end
+    end
+  end
+  
+  def find(s) # find
     b = find_in_table(s)
     @names[b]
   end
