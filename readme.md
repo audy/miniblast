@@ -8,7 +8,7 @@ The usual seed and extend search algorithm implemented in Ruby.
 
 - Finds you a string that has the largest matching substring to your query string.
 - Uses all your cores
-- Is fast (faster than megablast)
+- Is fast
 	
 ## What it don't?
 

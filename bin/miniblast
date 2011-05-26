@@ -14,7 +14,7 @@ CPUS = Parallel.processor_count
 miniblast = Miniblast.new :k => K
 
 # Load database
-  miniblast.load(database) 
+miniblast.load(database) 
 
 puts miniblast.size
 
