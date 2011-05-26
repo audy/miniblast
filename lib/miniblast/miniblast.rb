@@ -1,5 +1,5 @@
 require 'benchmark'
-require 'zlib'
+require 'snappy'
 
 class Miniblast
   attr_accessor :names, :k, :hash_table, :database
@@ -55,10 +55,7 @@ class Miniblast
 
   # deflate a string using gzip compression
   def deflate(s)
-    z = Zlib::Deflate.new(9)
-    dst = z.deflate(s, Zlib::FINISH)
-    z.close
-    dst.size
+    Snappy.compress(s).length
   end
 
   # return closest match
