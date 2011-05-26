@@ -8,14 +8,19 @@ require 'dnaio'
 require 'miniblast'
 require 'parallel'
 
+# Parse Arguments
 fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length >= 2
 database, query = ARGV
 K = ARGV[2].to_i || 35
 CPUS = Parallel.processor_count
 
+# Initialize miniblast
 miniblast = Miniblast.new :k => K
+
+# Load database
 File.open(database) { |handle| miniblast.load(handle) }
 
+# Query and print results
 File.open(query) do |handle|
   qs = DnaIO.new handle
 
