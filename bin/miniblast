@@ -24,8 +24,9 @@ File.open(query) do |handle|
   
   start = Time.now
   seq = qs.first.sequence[100..299]
-  10_000.times do
-    miniblast.find seq
+  10000.times do
+    match = miniblast.find seq
+    #puts match[:name], match[:score]
   end
   stop = Time.now
   

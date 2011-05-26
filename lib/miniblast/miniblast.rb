@@ -1,23 +1,29 @@
 require 'benchmark'
+require 'zlib'
 
 class Miniblast
-  attr_accessor :names, :k, :hash_table
+  attr_accessor :names, :k, :hash_table, :database
   
   def initialize(args={})
     @k = args[:k]
     @names = Hash.new
-    @hash_table = Hash.new { |h, k| h[k] = Array.new }  
+    @hash_table = Hash.new { |h, k| h[k] = Array.new }
+    @database = Hash.new # save original sequences
+    @sizes = Hash.new # compressed sequence sizes
   end
   
-  def add(sequence, name) # add a sequence to the database
+  # add a sequence to the database
+  def add(sequence, name)
     id = @names.keys.length + 1
     @names[id] = name
+    @database[id] = sequence
     kmers(sequence).each do |kmer|
       @hash_table[kmer] << id
     end
   end
   
-  def load(handle, args={}) # load an entire database
+  # load an entire database
+  def load(handle, args={})
     File.open(handle) do |handle|
       db = DnaIO.new handle
       db.each do |record|
@@ -26,18 +32,37 @@ class Miniblast
     end
   end
   
-  def find(s) # find
-    b = find_in_table(s)
-    @names[b]
+  # search database for a similar sequence
+  # return name and score
+  def find(s)
+    id = find_in_table(s)
+    {:name => @names[id], :score => score(s, @database[id])}
   end
   
-  def size # return size of database
+  # return size of database
+  def size
     @hash_table.keys.length
+  end
+  
+  # score query sequence to database sequence similarity using compression
+  def score(s, d)
+    i, j, k = deflate(s), deflate(d), deflate(s + d)
+    # how to calculate significance of similarity?
+    k < (i + j)
   end
   
   private
 
-  def find_in_table(s) # return closest match
+  # deflate a string using gzip compression
+  def deflate(s)
+    z = Zlib::Deflate.new(9)
+    dst = z.deflate(s, Zlib::FINISH)
+    z.close
+    dst.size
+  end
+
+  # return closest match
+  def find_in_table(s)
     kmers = kmers(s)
 
     ids = Array.new
@@ -51,7 +76,8 @@ class Miniblast
     best.first unless best.nil?
   end
     
-  def kmers(s) # generate kmers from a string
+  # generate kmers from a string
+  def kmers(s)
     kmers = []
     steps = s.length - @k
     steps.times do |n|
