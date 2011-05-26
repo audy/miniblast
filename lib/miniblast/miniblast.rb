@@ -1,3 +1,5 @@
+require 'benchmark'
+
 class Miniblast
   attr_accessor :names, :k, :hash_table
   
@@ -19,7 +21,7 @@ class Miniblast
     File.open(handle) do |handle|
       db = DnaIO.new handle
       db.each do |record|
-        self.add record.sequence, record.name, 
+        self.add(record.sequence, record.name)
       end
     end
   end
@@ -29,24 +31,31 @@ class Miniblast
     @names[b]
   end
   
+  def size # return size of database
+    @hash_table.keys.length
+  end
+  
   private
 
   def find_in_table(s) # return closest match
-    ids = Array.new
     kmers = kmers(s)
+
+    ids = Array.new
     kmers.each do |kmer|
       ids << hash_table[kmer] if hash_table.has_key? kmer
     end
+    
     ids.flatten!
+
     best = ids.group_by{ |e| e }.values.max_by(&:size)
     best.first unless best.nil?
   end
     
   def kmers(s) # generate kmers from a string
     kmers = []
-    steps = s.length - @k + 1
+    steps = s.length - @k
     steps.times do |n|
-      kmer = s[n..n+K]
+      kmer = s[n, K]
       kmers << kmer
     end
     kmers

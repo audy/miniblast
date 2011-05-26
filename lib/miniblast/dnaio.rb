@@ -8,7 +8,7 @@ class DnaIO # iterator
   def each
     sequence, header = nil, nil
     @handle.each do |line|
-      if line[0] == '>'
+      if line[0].chr == '>'
         yield Dna.new(:name => header, :sequence => sequence) if sequence
         sequence = ''
         header = line[1..-1].strip

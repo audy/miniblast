@@ -1,23 +1,37 @@
 #!/usr/bin/env ruby
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'miniblast'))
+require 'rubygems'
 require 'parallel'
+require 'benchmark'
 
 # Parse Arguments
 fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length >= 2
 database, query = ARGV
-K = ARGV[2].to_i || 35
+K = 35
 CPUS = Parallel.processor_count
 
 # Initialize miniblast
 miniblast = Miniblast.new :k => K
 
 # Load database
-File.open(database) { |handle| miniblast.load(handle) }
+  miniblast.load(database) 
+
+puts miniblast.size
 
 # Query and print results
 File.open(query) do |handle|
   qs = DnaIO.new handle
-
+  
+  start = Time.now
+  seq = qs.first.sequence[100..299]
+  10_000.times do
+    miniblast.find seq
+  end
+  stop = Time.now
+  
+  puts "Duration = #{stop - start}s"
+  exit
+  
   Parallel.map(qs, :in_processes => CPUS) do |chunk|
     hit = miniblast.find chunk.sequence
     puts "#{chunk.name} -> #{hit.nil? ? 'n/a' : chunk.name}"
