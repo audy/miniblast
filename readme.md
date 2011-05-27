@@ -18,4 +18,4 @@ This is a pet project of mine. Instead of getting a Chevy z28 or a pair of reall
 
 ## Requirements
 
-Ruby 1.8.7 or 1.9.2, and the awesome [Parallel](https://github.com/grosser/parallel) gem.
+Ruby 1.8.7 or 1.9.2 (if you want to go _faaast!_), and the awesome [Parallel](https://github.com/grosser/parallel) gem (`gem install parallel`).
