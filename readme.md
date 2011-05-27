@@ -1,10 +1,10 @@
-# MiniBLAST
+# miniblast
 
 The usual seed and extend search algorithm implemented in Ruby.
 
     miniblast database.fasta query.fasta [kmer_length]
 
-This is a pet project of mine. Instead of getting a Chevy z28 or a pair of really slick roller skates, I hack away at my DNA sequence searching program.
+While other men tune their Z28s, I hack away at miniblast.
 
 ## What it do?
 
