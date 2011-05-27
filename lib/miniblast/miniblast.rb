@@ -14,7 +14,7 @@ class Miniblast
   
   # add a sequence to the database
   def add(sequence, name)
-    id = @names.keys.length + 1
+    id = (@names.keys.length + 1) # saves memory, but slow
     @names[id] = name
     @database[id] = sequence
     kmers(sequence).each do |kmer|
@@ -36,7 +36,11 @@ class Miniblast
   # return name and score
   def find(s)
     id = find_in_table(s)
-    {:name => @names[id], :score => score(s, @database[id])}
+    unless id.nil?
+      h = {:name => @names[id], :score => score(s, @database[id])}
+    else
+      nil
+    end
   end
   
   # return size of database
@@ -46,7 +50,7 @@ class Miniblast
   
   # score query sequence to database sequence similarity using compression
   def score(s, d)
-    i, j, k = deflate(s), deflate(d), deflate(s + d)
+    i, j, k = deflate(s).length, deflate(d).length, deflate(s + d).length
     # how to calculate significance of similarity?
     k < (i + j)
   end
@@ -55,7 +59,7 @@ class Miniblast
 
   # deflate a string using gzip compression
   def deflate(s)
-    Snappy.compress(s).length
+    Snappy.compress(s)
   end
 
   # return closest match

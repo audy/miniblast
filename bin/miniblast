@@ -14,27 +14,14 @@ CPUS = Parallel.processor_count
 miniblast = Miniblast.new :k => K
 
 # Load database
-miniblast.load(database) 
-
-puts miniblast.size
+miniblast.load(database)
 
 # Query and print results
 File.open(query) do |handle|
   qs = DnaIO.new handle
-  
-  start = Time.now
-  seq = qs.first.sequence[100..299]
-  10000.times do
-    match = miniblast.find seq
-    #puts match[:name], match[:score]
-  end
-  stop = Time.now
-  
-  puts "Duration = #{stop - start}s"
-  exit
-  
   Parallel.map(qs, :in_processes => CPUS) do |chunk|
+    chunk.sequence = chunk.sequence[100, 100]
     hit = miniblast.find chunk.sequence
-    puts "#{chunk.name} -> #{hit.nil? ? 'n/a' : chunk.name}"
-  end
+    puts "#{chunk.name} -> #{hit.nil? ? 'n/a' : hit[:name]}"
+  end  
 end
