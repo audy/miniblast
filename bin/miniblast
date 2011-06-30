@@ -7,7 +7,7 @@ require 'benchmark'
 # Parse Arguments
 fail "usage: #{__FILE__} database.fasta query.fasta [kmer]" unless ARGV.length >= 2
 database, query = ARGV
-K = 35
+K = ARGV[2].nil? ? 20 : ARGV[2]
 CPUS = Parallel.processor_count
 
 # Initialize miniblast

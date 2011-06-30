@@ -1,6 +1,5 @@
-require 'benchmark'
+require 'rubygems'
 require 'snappy'
-require 'trie'
 
 class Miniblast
   attr_accessor :names, :k, :hash_table, :database
@@ -10,7 +9,7 @@ class Miniblast
     @names = Hash.new
     @hash_table = Hash.new { |h, k| h[k] = Array.new }
     @database = Hash.new # save original sequences
-    @sizes = Trie.new # compressed sequence sizes
+    @sizes = Hash.new # compressed sequence sizes
   end
   
   # add a sequence to the database
