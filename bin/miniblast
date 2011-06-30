@@ -20,7 +20,6 @@ miniblast.load(database)
 File.open(query) do |handle|
   qs = DnaIO.new handle
   Parallel.map(qs, :in_processes => CPUS) do |chunk|
-    chunk.sequence = chunk.sequence[100, 100]
     hit = miniblast.find chunk.sequence
     puts "#{chunk.name} -> #{hit.nil? ? 'n/a' : hit[:name]}"
   end  
