@@ -15,11 +15,17 @@ class Miniblast
   
   # add a sequence to the database
   def add(sequence, name)
+    
     # make a new id
     id = @id_posn += 1
-    @names[id] = name
-    @database[id] = sequence
-    kmers(sequence).each do |kmer|
+    
+    @names[id] = name # name of sequence
+    @database[id] = sequence # the sequence itself
+     
+    # add to search hash
+    # this is the time-consuming part
+    (sequence.length - @k).times do |n|
+      kmer = sequence[n, @k]
       @hash_table[kmer] << id
     end
   end
@@ -78,16 +84,5 @@ class Miniblast
     best = ids.group_by{ |e| e }.values.max_by(&:size)
     best.first unless best.nil?
   end
-    
-  # generate kmers from a string
-  def kmers(s)
-    kmers = []
-    steps = s.length - @k
-    steps.times do |n|
-      kmer = s[n, K]
-      kmers << kmer
-    end
-    kmers
-  end
-  
+ 
 end
