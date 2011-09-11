@@ -22,10 +22,11 @@ class Miniblast
     @names[id] = name # name of sequence
     @database[id] = sequence # the sequence itself
      
-    # add to search hash
-    # this is the time-consuming part
+    # generate kmers and add them to db
+    # O of L/K
     (sequence.length - @k).times do |n|
       kmer = sequence[n, @k]
+      # O?
       @hash_table[kmer] << id
     end
   end
