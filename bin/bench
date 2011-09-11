@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'benchmark'
+require 'irb'
+
+K = 45 # Kmer length
+N = 1000 # no. sequences in db
+L = 100 # sequence length
+
+def generate
+  $sequences = []
+  N.times do 
+    $sequences << (0...100).map{ ['G','A','T','C'][rand(4)] }.join
+  end
+  puts "generated #{N} sequences"
+end
+generate
+
+# make the database outside the benchmark (not benchmarking random
+# string generation
+
+def benchmark
+
+  load File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'miniblast', 'miniblast.rb'))
+
+  mb = Miniblast.new :k => K
+  time = Benchmark.measure do
+
+    N.times do |n|
+      mb.add($sequences[n], n.to_s)
+    end
+
+  end
+  time
+end
+
+IRB.start
