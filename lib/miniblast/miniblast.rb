@@ -10,11 +10,13 @@ class Miniblast
     @hash_table = Hash.new { |h, k| h[k] = Array.new }
     @database = Hash.new # save original sequences
     @sizes = Hash.new # compressed sequence sizes
+    @id_posn = 0 # id counter for making ids
   end
   
   # add a sequence to the database
   def add(sequence, name)
-    id = (@names.keys.length + 1) # saves memory, but slow
+    # make a new id
+    id = @id_posn += 1
     @names[id] = name
     @database[id] = sequence
     kmers(sequence).each do |kmer|
