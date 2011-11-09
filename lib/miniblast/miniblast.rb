@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'snappy'
+require 'redis'
 
 class Miniblast
   attr_accessor :names, :k, :hash_table, :database
@@ -7,6 +8,10 @@ class Miniblast
   def initialize(args={})
     @k = args[:k]
     @names = Hash.new
+    
+    
+    @redis = Redis.new
+    
     @hash_table = Hash.new { |h, k| h[k] = Array.new }
     @database = Hash.new # save original sequences
     @sizes = Hash.new # compressed sequence sizes
@@ -27,7 +32,7 @@ class Miniblast
     (sequence.length - @k).times do |n|
       kmer = sequence[n, @k]
       # O?
-      @hash_table[kmer] << id
+      @redis.sadd kmer, id
     end
   end
   
@@ -77,7 +82,7 @@ class Miniblast
 
     ids = Array.new
     kmers.each do |kmer|
-      ids << hash_table[kmer] if hash_table.has_key? kmer
+      ids << @redis.smembers(kmer) if @redis.exists? kmer
     end
     
     ids.flatten!
